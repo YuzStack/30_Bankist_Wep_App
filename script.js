@@ -69,7 +69,7 @@ function displayMovements(movements) {
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-          <div class="movements__value">${mov}</div>
+          <div class="movements__value">${mov}€</div>
       </div>
     `;
 
@@ -94,6 +94,33 @@ createUsername(accounts);
 function calcDisplayBalance(movements) {
   const balance = movements.reduce((acc, cur) => acc + cur, 0);
 
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance}€`;
 }
 calcDisplayBalance(account1.movements);
+
+// A function that calculates and display the summaries
+function calcDisplaySummary(arr) {
+  const totalIncome = arr
+    .filter(arrItem => arrItem > 0)
+    .reduce((acc, arrItem) => acc + arrItem, 0);
+
+  labelSumIn.textContent = `${totalIncome}€`;
+
+  const totalWithdrawals = arr
+    .filter(arrItem => arrItem < 0)
+    .reduce((acc, arrItem) => acc + arrItem, 0);
+
+  labelSumOut.textContent = `${Math.abs(totalWithdrawals)}€`;
+
+  const totalInterest = arr
+    .filter(arrItem => arrItem > 0)
+    .map(arrItem => (arrItem * 1.2) / 100)
+    .filter((int, i, arr) => {
+      // console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, int) => acc + int, 0);
+
+  labelSumInterest.textContent = `${totalInterest}€`;
+}
+calcDisplaySummary(account1.movements);
