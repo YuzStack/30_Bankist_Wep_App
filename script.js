@@ -191,3 +191,29 @@ btnTransfer.addEventListener('click', function (e) {
     inputTransferTo.value = inputTransferAmount.value = '';
   }
 });
+
+// Implementing close account functionality ‼️
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  // Check if the details are correct
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc =>
+        acc.username === currentAccount.username &&
+        acc.pin === currentAccount.pin
+    );
+
+    // Remove the current user account from the database
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 0;
+
+    // Clear the input fields
+    inputCloseUsername.value = inputClosePin.value = '';
+  }
+});
