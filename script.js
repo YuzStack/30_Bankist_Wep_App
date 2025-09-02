@@ -76,7 +76,6 @@ function displayMovements(movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 }
-displayMovements(account1.movements);
 
 // A function that creates the (abbreviated) usersernames and sets them as new properties
 const createUsername = function (accs) {
@@ -96,25 +95,24 @@ function calcDisplayBalance(movements) {
 
   labelBalance.textContent = `${balance}€`;
 }
-calcDisplayBalance(account1.movements);
 
 // A function that calculates and display the summaries
-function calcDisplaySummary(arr) {
-  const totalIncome = arr
-    .filter(arrItem => arrItem > 0)
-    .reduce((acc, arrItem) => acc + arrItem, 0);
+function calcDisplaySummary(acc) {
+  const totalIncome = acc.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
 
   labelSumIn.textContent = `${totalIncome}€`;
 
-  const totalWithdrawals = arr
-    .filter(arrItem => arrItem < 0)
-    .reduce((acc, arrItem) => acc + arrItem, 0);
+  const totalWithdrawals = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
 
   labelSumOut.textContent = `${Math.abs(totalWithdrawals)}€`;
 
-  const totalInterest = arr
-    .filter(arrItem => arrItem > 0)
-    .map(arrItem => (arrItem * 1.2) / 100)
+  const totalInterest = acc.movements
+    .filter(mov => mov > 0)
+    .map(mov => (mov * acc.interestRate) / 100)
     .filter((int, i, arr) => {
       // console.log(arr);
       return int >= 1;
@@ -123,4 +121,40 @@ function calcDisplaySummary(arr) {
 
   labelSumInterest.textContent = `${totalInterest}€`;
 }
-calcDisplaySummary(account1.movements);
+
+// Event handler ‼️
+let currentAccount;
+
+btnLogin.addEventListener('click', e => {
+  // Prevent form from submitting
+  e.preventDefault();
+
+  // console.log('Login');
+
+  // Find and verify login
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and welcome message
+    containerApp.style.opacity = 1;
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+
+    // Clear input fields and remove focus
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginUsername.blur();
+    inputLoginPin.blur();
+
+    // Display movements
+    displayMovements(currentAccount.movements);
+
+    // Display balance
+    calcDisplayBalance(currentAccount.movements);
+
+    // Display summary
+    calcDisplaySummary(currentAccount);
+  }
+});
